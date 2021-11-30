@@ -11,9 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r eval = FALSE}
 rm(list = ls(all.names = TRUE)) # clears global environ.
-
-# Set Working Directory 
-setwd("~/Documents/UNC/Jaspers Lab/Lab Work/Projects/Macrophage In Vitro/MDMs/ELISA Optimization")
 ```
 ```{r load-packages, include = FALSE}
 # Load packages
