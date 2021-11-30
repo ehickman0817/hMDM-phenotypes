@@ -1,8 +1,5 @@
 rm(list = ls(all.names = TRUE)) # clears global environ.
 
-# Set Working Directory 
-setwd("~/Documents/UNC/Jaspers Lab/Lab Work/Projects/Macrophage In Vitro/MDMs/Rscript")
-
 # Load packages
 library(tidyverse) # for data cleaning
 library(pheatmap) # for making heatmap
