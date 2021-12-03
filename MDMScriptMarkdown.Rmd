@@ -1,7 +1,10 @@
 ---
 title: "hMDM Cytokine Analysis Script"
-output: html_document
+output: rmarkdown::github_document
 ---
+
+This repository contains the input file and code for generating figures associated with the manuscript "Expanded functional characterization of M0, M1, and M2 human monocyte-derived macrophages supports their utility as a model for respiratory macrophages." (Hickman et al). This document demonstrates the implementation of the provided code.
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -152,7 +155,7 @@ fviz_pca_ind(pca.res,
 ```
 
 Plot PCA contributions. To decide which variables to label in M1 direction, the top 5 contributors from axes 1 and 2 were chosen since so many labels overlapped.
-```{r}
+```{r warning = FALSE}
 # Plot top contributing cytokines by PCA axis
 fviz_contrib(pca.res, choice = "var", axes = 1, top = 10)
 fviz_contrib(pca.res, choice = "var", axes = 2, top = 10)
