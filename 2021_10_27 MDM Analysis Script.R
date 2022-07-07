@@ -8,6 +8,8 @@ library(table1) # for making cytokine summary table
 library(ggfortify) # for PCA
 library(factoextra) # for PCA 
 library(ggplot2) # for plotting
+library(readxl) # for data import
+library(ggpubr) # for making figure panel
 
 # Import data
 MDMCytokineData <- read.csv("2021_05_20 MSD MDM Table.csv")
@@ -134,3 +136,77 @@ fviz_pca_var(pca.res, col.var = "contrib",
   labs(color = "Contribution") +
   ylim(-1.25, 1.25) +
   xlim(-1.25, 1.25)
+
+###############################################
+#### 4. Bioenergetics PCA
+###############################################
+
+# Import data
+bioenergetics_data <- read_excel("2022_05_27 hMDM Bioenergetics Data.xlsx")
+bioenergetics_data <- data.frame(bioenergetics_data, row.names = bioenergetics_data$RowID)
+bioenergetics_data <- bioenergetics_data[, -1]
+
+# Set Factors
+bioenergetics_data$Sample.Type <- factor(bioenergetics_data$Sample.Type, 
+                                         levels = c("M0 hMDM", "M1 hMDM", "M2 hMDM"))
+
+# Create a data frame with only bioenergetic columns
+bioenergetics_data_pca <- bioenergetics_data[, -1]
+
+# Run PCA on each set of data
+# Centering ensures components are only looking at variance within the dataset.
+# Scaling brings all variables to the same magnitude so that high abundance variables 
+# do not influence results more than low abundance variables. 
+pca.res <- prcomp(bioenergetics_data_pca, center = TRUE, scale = TRUE)
+
+# Set theme
+theme_set(theme_bw())
+
+# Cluster Plots
+bioenergetics.pca <- fviz_pca_ind(pca.res,
+             label = "none",
+             habillage = bioenergetics_data$Sample.Type, 
+             palette = c("#0A0A0A", "#0253F5", "#02D40D"),
+             addEllipses = TRUE) + 
+  ggtitle("PCA - Bioenergetics Parameters") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 10),
+        panel.border = element_rect(fill = NA, color = "black", size = 0.3),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = c(0.15, 0.25),
+        legend.title = element_blank(),
+        legend.background = element_rect(fill = "white", 
+                                         size = 0.3, 
+                                         linetype = "solid",
+                                         color = "black"),
+        legend.text = element_text(size = 7)) +
+  xlim(-10, 10)
+
+# Contribution Plot
+bioenergetics.contrib <- fviz_pca_var(pca.res, col.var = "contrib",
+             repel = TRUE, col.circle = NA, labelsize = 4) +
+  ggtitle("PCA - Contributions of Bioenergetic Parameters") +
+  scale_color_viridis(begin = 0, end = 0.6) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 10),
+        panel.border = element_rect(fill = NA, color = "black", size = 0.3),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "right",
+        legend.text = element_text(size = 7), 
+        aspect.ratio=1/1.75) +
+  labs(color = "Contribution") +
+  ylim(-1.25, 1.25) +
+  xlim(-1.25, 1.25)
+
+# Make Panel
+dev.off()
+
+pdf(file = "hMDM Bioenergetics PCA.pdf",
+    width = 10,
+    height = 5)
+
+ggarrange(bioenergetics.pca, bioenergetics.contrib,
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+dev.off()
